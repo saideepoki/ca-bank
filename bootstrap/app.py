@@ -33,7 +33,7 @@ def main():
 
     def on_login_success(user):
       log.info("User logged in", username=user.username, role=user.role)
-      app.main_window = MainWindow(user)
+      app.main_window = MainWindow(user, db)
       app.main_window.show()
 
     login_window = LoginWindow(auth_service, on_login_success)

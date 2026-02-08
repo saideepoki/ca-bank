@@ -22,3 +22,15 @@ class User(Base):
     password_hash = Column(String, nullable=True)
     role = Column(String, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
+
+class Client(Base):
+    """
+    Represents a CA client (company / individual).
+    """
+    __tablename__ = "clients"
+
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    name = Column(String, nullable=False)
+    gst_number = Column(String, nullable=True)
+
+    created_at = Column(DateTime, default=datetime.utcnow)
