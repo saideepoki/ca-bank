@@ -7,6 +7,8 @@ from infrastructure.logging.logger import configure_logging
 from infrastructure.database.db import Database
 from presentation.ui.main_window import MainWindow
 from application.services.user_service import UserService
+from application.services.auth_service import AuthService
+from presentation.ui.login_window import LoginWindow
 
 
 
@@ -25,9 +27,17 @@ def main():
     user_service.ensure_admin_exists()
     log.info("Admin user ensured")
 
+    auth_service = AuthService(db)
+
     app = QApplication(sys.argv)
-    window = MainWindow()
-    window.show()
+
+    def on_login_success(user):
+      log.info("User logged in", username=user.username, role=user.role)
+      app.main_window = MainWindow(user)
+      app.main_window.show()
+
+    login_window = LoginWindow(auth_service, on_login_success)
+    login_window.show()
 
     sys.exit(app.exec())
 
