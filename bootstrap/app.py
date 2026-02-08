@@ -6,6 +6,8 @@ from config.settings import Settings
 from infrastructure.logging.logger import configure_logging
 from infrastructure.database.db import Database
 from presentation.ui.main_window import MainWindow
+from application.services.user_service import UserService
+
 
 
 def main():
@@ -18,6 +20,10 @@ def main():
     db = Database(Settings.DATA_DIR)
     db.initialize()
     log.info("Database initialized", path=str(db.db_path))
+
+    user_service = UserService(db)
+    user_service.ensure_admin_exists()
+    log.info("Admin user ensured")
 
     app = QApplication(sys.argv)
     window = MainWindow()
