@@ -5,7 +5,8 @@ from PyQt6.QtWidgets import (
     QVBoxLayout,
     QListWidget,
     QPushButton,
-    QListWidgetItem
+    QListWidgetItem,
+    QMessageBox
 )
 from PyQt6.QtCore import Qt
 
@@ -60,8 +61,14 @@ class MainWindow(QMainWindow):
 
         self.client_list = QListWidget()
         self.client_list.itemSelectionChanged.connect(self.on_client_selected)
-        self.load_clients()
         layout.addWidget(self.client_list)
+
+        self.client_action_btn = QPushButton("Client Actions")
+        self.client_action_btn.setEnabled(False)
+        self.client_action_btn.clicked.connect(self.handle_client_action)
+        layout.addWidget(self.client_action_btn)
+
+        self.load_clients()
 
         central.setLayout(layout)
         self.setCentralWidget(central)
@@ -70,6 +77,7 @@ class MainWindow(QMainWindow):
         self.client_list.clear()
         self.active_client = None
         self.active_client_label.setText("Active Client: None")
+        self.client_action_btn.setEnabled(False)
 
         with Session(self.db.engine) as session:
             clients = session.scalars(select(Client)).all()
@@ -102,3 +110,19 @@ class MainWindow(QMainWindow):
                 self.active_client_label.setText(
                     f"Active Client: {client.name}"
                 )
+                self.client_action_btn.setEnabled(True)
+    
+    def handle_client_action(self):
+        if not self.active_client:
+            QMessageBox.warning(
+                self,
+                "No Client Selected",
+                "Please select a client first."
+            )
+            return
+
+        QMessageBox.information(
+            self,
+            "Client Action",
+            f"Actions for client: {self.active_client.name}"
+        )
