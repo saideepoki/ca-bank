@@ -3,7 +3,8 @@ from PyQt6.QtWidgets import (
     QLabel,
     QWidget,
     QVBoxLayout,
-    QListWidget
+    QListWidget,
+    QPushButton
 )
 from PyQt6.QtCore import Qt
 
@@ -12,6 +13,8 @@ from sqlalchemy import select
 
 from domain.value_objects.roles import Roles
 from infrastructure.database.models import Client
+from presentation.ui.add_client_dialog import AddClientDialog
+
 
 
 class MainWindow(QMainWindow):
@@ -41,6 +44,11 @@ class MainWindow(QMainWindow):
             warning.setAlignment(Qt.AlignmentFlag.AlignCenter)
             warning.setStyleSheet("color: red;")
             layout.addWidget(warning)
+        
+        if user.role == Roles.ADMIN:
+            add_client_btn = QPushButton("Add Client")
+            add_client_btn.clicked.connect(self.open_add_client)
+            layout.addWidget(add_client_btn)
 
         layout.addWidget(QLabel("Clients"))
 
@@ -59,3 +67,9 @@ class MainWindow(QMainWindow):
 
             for client in clients:
                 self.client_list.addItem(client.name)
+    
+    def open_add_client(self):
+        dialog = AddClientDialog(self.db)
+
+        if dialog.exec():
+            self.load_clients()
